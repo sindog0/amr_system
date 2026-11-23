@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>wheeled_description</name>
+  <version>0.1.0</version>
+  <description>
+    Wheeled AMR 的 URDF/xacro 与 mesh。当前模型源自原厂参考
+    vendor/src/abot_base/abot_model（ABOT ROS 1），仅做工装化复制。
+  </description>
+
+  <maintainer email="todo@todo.todo">robot_system</maintainer>
+  <!-- 原厂包未声明 license，复制前需确认；见 README.md -->
+  <license>TODO</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+    <!-- ros_gz_sim 会把 package:// 转成 model://，需要把 share 的父目录加进
+         GZ_SIM_RESOURCE_PATH，否则 Gz Sim 找不到 meshes。 -->
+    <gazebo_ros gazebo_model_path="${prefix}/.."/>
+  </export>
+</package>

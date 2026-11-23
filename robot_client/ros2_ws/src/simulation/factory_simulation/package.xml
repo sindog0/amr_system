@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>factory_simulation</name>
+  <version>0.1.0</version>
+  <description>
+    工厂/厂房世界与仿真组合 launch。只负责“注入世界”，不引用 application/services，
+    也不直接引用具体机器人的模型文件。
+  </description>
+
+  <maintainer email="todo@todo.todo">robot_system</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- 允许依赖：*_description / *_simulation -->
+  <exec_depend>wheeled_description</exec_depend>
+  <exec_depend>wheeled_simulation</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

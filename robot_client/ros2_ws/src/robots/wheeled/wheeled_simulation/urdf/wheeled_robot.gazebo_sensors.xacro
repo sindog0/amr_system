@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!--
+  Gz Sim 传感器。与 Gazebo Classic 的区别：
+  - 类型是 gpu_lidar / camera / imu（不是 ray）；
+  - <topic> 直接指定 gz transport 主题名，ros_gz_bridge 再用同名桥到 ROS；
+  - <gz_frame_id> 决定桥接后 ROS 消息的 header.frame_id，缺了 RViz 会对不上 TF；
+  - 传感器真正出数据还需要 world 里加载 gz-sim-sensors-system / imu-system
+    （见 simulation/factory_simulation/worlds/sim_demo.sdf）。
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- 2D 激光：挂到 description 里的 laser_link 上 -->
+  <gazebo reference="laser_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <update_rate>10</update_rate>
+      <topic>/scan</topic>
+      <gz_frame_id>laser_link</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159</min_angle>
+            <max_angle>3.14159</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>12.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <!-- 相机：图像走 /camera/image，内参走 /camera_info（gz 相机传感器约定） -->
+  <gazebo reference="camera_link">
+    <sensor name="camera" type="camera">
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+      <update_rate>30</update_rate>
+      <topic>/camera/image</topic>
+      <gz_frame_id>camera_link</gz_frame_id>
+      <camera name="head">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+    </sensor>
+  </gazebo>
+
+  <!-- IMU：挂到 base_imu -->
+  <gazebo reference="base_imu">
+    <sensor name="imu" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <topic>/imu</topic>
+      <gz_frame_id>base_imu</gz_frame_id>
+    </sensor>
+  </gazebo>
+
+</robot>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+  仿真专用模型入口：把「几何/惯性」（description）与「怎么被驱动、怎么感知」
+  （本包的 ros2_control / gz 传感器）组合起来。
+  依赖方向：wheeled_simulation → wheeled_description，description 不知道仿真的存在。
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="abot_model">
+
+  <xacro:include filename="$(find wheeled_description)/urdf/wheeled_robot.urdf.xacro"/>
+
+  <xacro:include filename="$(find wheeled_simulation)/urdf/wheeled_robot.ros2_control.xacro"/>
+  <xacro:include filename="$(find wheeled_simulation)/urdf/wheeled_robot.gazebo_sensors.xacro"/>
+
+</robot>

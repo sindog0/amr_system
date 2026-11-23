@@ -1,0 +1,16 @@
+# 机器人 ↔ RMS 主题约定（MQTT 5，VDA 5050 风格）
+version: 1
+qos:
+  state: 1
+  order: 2
+  log: 0
+topics:
+  # 机器人 → RMS
+  robot_state:      "rms/robot/{robot_id}/state"        # retained
+  robot_connection: "rms/robot/{robot_id}/connection"   # online/offline LWT
+  robot_visualization: "rms/robot/{robot_id}/visualization"
+  robot_log:        "rms/robot/{robot_id}/log"
+  # RMS → 机器人
+  order:            "rms/robot/{robot_id}/order"
+  order_ack:        "rms/robot/{robot_id}/order/ack"
+  instant_action:   "rms/robot/{robot_id}/instant_action"

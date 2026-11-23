@@ -1,0 +1,50 @@
+# controller_manager（由 gz_ros2_control 插件在 Gazebo 进程内创建）读取的配置。
+#
+# 三个层次：
+#   1. controller_manager.ros__parameters: 更新频率 + 要加载哪些控制器及其类型
+#   2. <controller>.ros__parameters:        每个控制器自己的参数
+#   3. 控制器激活后：joint_state_broadcaster 发布 /joint_states；
+#      diff_drive_controller 订阅 ~/cmd_vel（TwistStamped）、发布 ~/odom 和 odom->base_footprint 的 TF
+controller_manager:
+  ros__parameters:
+    update_rate: 100          # Hz，越小越省算力，越大控制越细
+    use_sim_time: true
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+
+diff_drive_controller:
+  ros__parameters:
+    # 左侧两个轮子、右侧两个轮子，名字对应 ros2_control 里的 joint
+    left_wheel_names: ["joint_left_w", "joint_left_s"]
+    right_wheel_names: ["joint_right_w", "joint_right_s"]
+
+    # 实测：左轮 y≈+0.1097，右轮 y≈-0.1080 → 轮距 0.2176 m；
+    # 轮子 STL 半径 0.0435 m（不是原厂注释里的 0.045，按几何实测）
+    wheel_separation: 0.2176
+    wheel_radius: 0.0435
+
+    base_frame_id: base_footprint
+    odom_frame_id: odom
+    enable_odom_tf: true
+    position_feedback: true   # 用关节反馈算里程计（false 则用指令推算）
+    publish_rate: 50.0
+    cmd_vel_timeout: 0.5      # 0.5 s 没收到速度就停
+
+    # 速度/加速度限幅（可选，但能防止仿真里瞬间打滑）
+    linear.x.has_velocity_limits: true
+    linear.x.max_velocity: 1.0
+    linear.x.min_velocity: -1.0
+    linear.x.has_acceleration_limits: true
+    linear.x.max_acceleration: 2.0
+    linear.x.min_acceleration: -2.0
+
+    angular.z.has_velocity_limits: true
+    angular.z.max_velocity: 3.14
+    angular.z.min_velocity: -3.14
+    angular.z.has_acceleration_limits: true
+    angular.z.max_acceleration: 6.28
+    angular.z.min_acceleration: -6.28
