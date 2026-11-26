@@ -131,6 +131,19 @@ ros2 topic pub -s -r 20 /diff_drive_controller/cmd_vel \
   "{header: {frame_id: base_link}, twist: {linear: {x: 0.3}}}"
 ```
 
+### 键盘遥控
+
+`teleop_twist_keyboard` 发的是 `geometry_msgs/Twist` 到 `/cmd_vel`，而 Jazzy 的
+`diff_drive_controller` 只收 `TwistStamped`。launch 默认会启动
+[cmd_vel_relay.py](scripts/cmd_vel_relay.py) 做转换，所以直接开遥控即可：
+
+```bash
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+# i 前进 / , 后退 / j l 转向 / k 停
+```
+
+不想用 relay 时 launch 加 `cmd_vel_relay:=false`，但那样就必须自己发 TwistStamped。
+
 ## 实测踩过的坑（模型/配置层面）
 
 1. **原厂 `velocity="0"`**：四个轮子的 joint limit 速度是 0，Gazebo 里关节不动。

@@ -9,4 +9,10 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
+# /cmd_vel (Twist) -> /diff_drive_controller/cmd_vel (TwistStamped)
+install(
+  PROGRAMS scripts/cmd_vel_relay.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 ament_package()

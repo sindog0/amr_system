@@ -1,14 +1,4 @@
-"""Gz Sim + ros2_control + 传感器桥接，可选 RViz2。
-
-启动顺序（也是理解这条链路的关键）：
-1. gz sim 起 server/GUI，并加载 world（world 决定有没有 sensors/imu 系统）；
-2. robot_state_publisher 发布 /robot_description（内容 = description + ros2_control + sensors）；
-3. ros_gz_sim create 把 URDF 转成 SDF 塞进 Gazebo；
-4. gz_ros2_control 插件在 Gazebo 进程内创建 /controller_manager；
-5. spawner 依次激活 joint_state_broadcaster、diff_drive_controller；
-6. ros_gz_bridge 把 /clock、/scan、/camera/image、/imu 桥成 ROS 话题。
-"""
-
+import os
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
@@ -17,11 +7,11 @@ from launch.actions import (
 )
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution, FindExecutable
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
-
+from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     simulation_share = FindPackageShare('wheeled_simulation')
@@ -123,6 +113,9 @@ def generate_launch_description():
                               description='spawn 位姿 z（m）'),
         DeclareLaunchArgument('yaw', default_value='0.0',
                               description='spawn 朝向（rad）'),
+        DeclareLaunchArgument(
+            'cmd_vel_relay', default_value='true',
+            description='启动 /cmd_vel(Twist) -> 控制器 TwistStamped 的转换节点'),
 
         gz_with_gui,
         gz_headless,
@@ -134,6 +127,15 @@ def generate_launch_description():
                 'robot_description': robot_description,
                 'use_sim_time': True,
             }],
+            output='screen',
+        ),
+        # teleop / Nav2 常发 geometry_msgs/Twist 到 /cmd_vel，
+        # 而 Jazzy 的 diff_drive_controller 只收 TwistStamped。
+        Node(
+            package='wheeled_simulation',
+            executable='cmd_vel_relay.py',
+            parameters=[{'use_sim_time': True}],
+            condition=IfCondition(LaunchConfiguration('cmd_vel_relay')),
             output='screen',
         ),
         Node(
@@ -162,3 +164,5 @@ def generate_launch_description():
             output='screen',
         ),
     ])
+
+
