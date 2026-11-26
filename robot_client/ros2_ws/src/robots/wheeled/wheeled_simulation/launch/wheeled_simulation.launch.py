@@ -19,18 +19,15 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     #1 获取机器人描述包路径
-    description_share = get_package_share_directory(
-        'wheeled_description'
-    )
     simulation_share = get_package_share_directory(
         'wheeled_simulation'
     )
 
     #2 默认文件路径
     default_model = os.path.join(
-        description_share,
+        simulation_share,
         'urdf',
-        'wheeled_robot.urdf.xacro'
+        'wheeled_robot.sim.urdf.xacro'
     )
 
     bridge_config = os.path.join(
@@ -111,9 +108,9 @@ def generate_launch_description():
     sensor_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        name='sensor_brige',
+        name='sensor_bridge',
         output='screen',
-        arguments=[{
+        parameters=[{
             'config_file': bridge_config
         }]
     )
@@ -157,11 +154,11 @@ def generate_launch_description():
         name='diff_drive_controller_spawner',
         output='screen',
         arguments=[
-            'joint_state_broadcaster',
-                '--controller-manager',
-                '/controller_manager',
-                '--controller-manager-timeout',
-                '120'
+            'diff_drive_controller',
+            '--controller-manager',
+            '/controller_manager',
+            '--controller-manager-timeout',
+            '120'
         ]
     )
 
