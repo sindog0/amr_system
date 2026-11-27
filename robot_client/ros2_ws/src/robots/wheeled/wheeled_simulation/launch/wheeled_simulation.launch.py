@@ -51,10 +51,10 @@ def generate_launch_description():
         description='robot URDF/Xacro file'
     )
 
-    declare_model_name = DeclareLaunchArgument(
-        'model_name',
-        default_value= 'default',
-        description='gazebo world name'
+    declare_world_name = DeclareLaunchArgument(
+        'world_name',
+        default_value='',
+        description='Gazebo world name. Leave empty to discover the running world.'
     )
 
     declare_spawn_x = DeclareLaunchArgument(
@@ -123,6 +123,7 @@ def generate_launch_description():
         name='spawn_robot',
         output='screen',
         arguments=[
+            '-world', world_name,
             '-topic', '/robot_description',
             '-name', 'wheeled_robot',
             '-x', spawn_x,
@@ -204,7 +205,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         declare_model,
-        declare_model_name,
+        declare_world_name,
         declare_spawn_x,
         declare_spawn_y,
         declare_spawn_z,
